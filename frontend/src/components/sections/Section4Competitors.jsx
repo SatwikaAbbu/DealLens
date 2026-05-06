@@ -6,17 +6,15 @@ export default function Section4Competitors({ competitors, moat }) {
   if (!competitors || !moat) {
     return (
       <ReportCard eyebrow="04 — Competitors" title="Competitor Map">
-        <div className="space-y-4">
-          <Skeleton className="h-14 w-full rounded-lg" />
-          <div className="rounded-xl overflow-hidden shadow-card border border-white/5">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex gap-4 px-4 py-4 border-b border-white/5 last:border-0 bg-bg-surface">
-                <Skeleton className="h-4 w-24 rounded" />
-                <Skeleton className="h-4 w-32 rounded" />
-                <Skeleton className="h-4 w-16 rounded" />
-                <Skeleton className="h-5 w-16 rounded-full ml-auto" />
-              </div>
-            ))}
+        <div className="space-y-6">
+          <Skeleton className="h-24 w-full rounded-xl" />
+          <div className="rounded-xl overflow-hidden shadow-card border border-white/5 bg-bg-surface p-5">
+            <Skeleton className="h-4 w-48 rounded mb-6" />
+            <div className="flex flex-wrap gap-3">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Skeleton key={i} className="h-8 w-24 rounded-full" />
+              ))}
+            </div>
           </div>
         </div>
       </ReportCard>
@@ -27,58 +25,72 @@ export default function Section4Competitors({ competitors, moat }) {
     switch (verdict) {
       case 'STRONG':
       case 'VERIFIED':
-        return 'bg-verdict-green-bg/50 border-verdict-green-border text-verdict-green-text';
+        return 'bg-verdict-green-bg/20 border-verdict-green-bar text-verdict-green-text border-l-4';
       case 'WEAK':
       case 'PARTIAL':
-        return 'bg-verdict-amber-bg/50 border-verdict-amber-border text-verdict-amber-text';
+        return 'bg-verdict-amber-bg/20 border-verdict-amber-bar text-verdict-amber-text border-l-4';
       case 'UNSUBSTANTIATED':
       case 'INFLATED':
-        return 'bg-verdict-red-bg/50 border-verdict-red-border text-verdict-red-text';
+        return 'bg-verdict-red-bg/20 border-verdict-red-bar text-verdict-red-text border-l-4';
       default:
-        return 'bg-bg-raised/50 border-white/5 text-text-muted';
+        return 'bg-bg-raised/50 border-white/5 text-text-muted border-l-4';
     }
   };
 
+  const moatBg = getMoatStyle(moat.verdict);
+
   return (
     <ReportCard eyebrow="04" title="Competitor Map">
-      <div className="space-y-6">
-        {/* Moat Verdict Banner */}
-        <div className={`p-4 rounded-xl border ${getMoatStyle(moat.verdict)}`}>
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 mt-1">
-              <span className="text-[10px] font-mono font-medium uppercase tracking-widest px-2 py-0.5 bg-current/10 rounded-full border border-current/20">
-                {moat.verdict}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Left Column: Moat Analysis */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-light" />
+            Moat Analysis
+          </h3>
+          <div className={`p-5 rounded-r-xl border border-white/[0.03] ${moatBg}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 bg-current/10 rounded-sm border border-current/20">
+                {moat.verdict} MOAT
               </span>
             </div>
-            <div>
-              <p className="text-xs font-mono uppercase tracking-widest opacity-60 mb-1">Moat Verdict</p>
-              <p className="text-sm font-sans leading-relaxed text-text-primary">
-                {moat.explanation || "No detailed moat analysis available."}
-              </p>
-            </div>
+            <p className="text-[14px] font-sans leading-relaxed text-white">
+              {moat.explanation || "No detailed moat analysis available."}
+            </p>
           </div>
         </div>
 
-        {/* Competitor List */}
-        {competitors && competitors.length > 0 ? (
-          <div className="rounded-xl overflow-hidden shadow-card border border-white/5">
-            <div className="bg-bg-raised px-4 py-3 border-b border-white/5">
-              <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-text-muted">
-                Funded Competitors Identified
-              </span>
+        {/* Right Column: Funded Competitors */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-light" />
+            Market Proximity
+          </h3>
+          {competitors && competitors.length > 0 ? (
+            <div className="rounded-xl shadow-card border border-white/[0.03] bg-bg-surface/30 p-5 h-full">
+              <p className="text-[10px] font-mono font-medium uppercase tracking-[0.15em] text-text-faint mb-4">
+                Funded Competitors Identified via Serper
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {competitors.map((comp, i) => (
+                  <span 
+                    key={i} 
+                    className="px-3 py-1.5 bg-bg-raised border border-white/10 rounded-full text-[13px] font-sans text-text-secondary shadow-sm hover:bg-white/5 transition-colors cursor-default flex items-center gap-2"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                    {comp}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="divide-y divide-white/5">
-              {competitors.map((comp, i) => (
-                <div key={i} className="px-4 py-3 flex items-center gap-3 bg-bg-surface hover:bg-bg-raised transition-colors">
-                  <span className="text-[10px] font-mono text-text-faint w-5">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-sm font-sans text-text-secondary">{comp}</span>
-                </div>
-              ))}
+          ) : (
+            <div className="rounded-xl shadow-card border border-white/[0.03] bg-bg-surface/30 p-5 h-full flex items-center justify-center">
+              <p className="text-sm text-text-muted italic">No highly funded direct competitors identified.</p>
             </div>
-          </div>
-        ) : (
-          <p className="text-sm text-text-muted italic px-2">No funded competitors identified in this category.</p>
-        )}
+          )}
+        </div>
+
       </div>
     </ReportCard>
   );
