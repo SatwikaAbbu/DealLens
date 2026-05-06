@@ -6,7 +6,7 @@ Rules:
 - Give a clear verdict: VERIFIED, INFLATED, or UNSUBSTANTIATED
 - Never say "it depends" — commit to a verdict
 - If inflated, state the inflation factor (e.g. "8x")
-- Cite the specific source used
+- The 'source' MUST be an actual, raw HTTP/HTTPS URL (e.g., https://...). Do not return text names for sources. If you cannot find a URL, return null.
 - Return ONLY valid JSON. No explanation. No markdown code blocks.
 
 Required JSON structure:
@@ -16,7 +16,7 @@ Required JSON structure:
   "real_tam": "string",
   "inflation_factor": "string or null",
   "explanation": "string — 2-3 sentences max",
-  "source": "string",
+  "source": "string (MUST be a valid HTTP URL)",
   "investor_question": "string — the exact question to ask the founder"
 }
 """

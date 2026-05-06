@@ -70,9 +70,24 @@ export default function ExpandableRow({ claim, verdict, evidence, source, questi
                   <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-text-muted mb-2">
                     Primary Source
                   </p>
-                  <p className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-block">
-                    {source}
-                  </p>
+                  {source.startsWith('http') ? (
+                    <a 
+                      href={source} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-flex items-center gap-2 hover:bg-accent/20 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {source}
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
+                    </a>
+                  ) : (
+                    <p className="text-[11px] font-mono text-accent-light bg-accent/10 border border-accent/20 px-2.5 py-1 rounded inline-block">
+                      {source}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

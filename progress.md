@@ -24,6 +24,7 @@
 | 11 | 06 May 2026 | Antigravity (AI) & User | **Finalized Premium Design & Intelligence Evolution.** Transformed the app into a "World-Class" product. Implemented Glassmorphism, Noise Textures, Neon Glow Accents, High-Contrast Typography, and a Radar (Spider) Chart for deal profiling. Added a Live AI Thinking Console to the sidebar. |
 | 12 | 06 May 2026 | Antigravity (AI) & User | **Deployment & Network Routing Optimization.** Configured FastAPI backend to serve built React frontend static files. Made frontend API paths dynamic. Enabled seamless full-stack app sharing via a single Ngrok tunnel. |
 | 13 | 06 May 2026 | Antigravity (AI) & User | **Finalized Investor-Grade UX & Immersive Visuals.** Implemented single-page landing with floating interactive preview cards and drag-reaction system. Built horizontal SVG pipeline for LoadingPage. Redesigned Sections 2 & 4 to Dossier-style layout. Added scroll-reveal animations and high-impact header scoring. |
+| 14 | 06 May 2026 | Antigravity (AI) & User | **Finalized AI Accuracy & Traceability.** Locked Gemini to `temperature=0.0` for deterministic scoring. Enforced raw HTTP URL returns in prompts. Updated `ExpandableRow` with clickable source links. Fixed competitor map to exclude the target startup. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -218,6 +219,9 @@
 | 8 | Use initials-based avatars for founders | Personalizes the report without requiring a real profile image | `Section2Founder.jsx` |
 | 9 | Add specific "Source" field to claims | Builds trust by showing the AI "showed its work" | `ExpandableRow.jsx` |
 | 10 | Implement manual filters in Section 3 | Provides high utility for investors scanning for red flags | `Section3Claims.jsx` |
+| 11 | Set AI temperature to 0.0 | Guarantees deterministic, repeatable results for judge demos | `gemini_client.py` |
+| 12 | Exclude target startup from competitors | Prevents the AI from listing the company as its own competitor | `moat_tester.py` |
+| 13 | Force raw URLs for sources | Enables one-click verification of claims for investor trust | `ExpandableRow.jsx` |
 
 ---
 

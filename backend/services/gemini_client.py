@@ -119,7 +119,7 @@ def _call_sync(model_name: str, system: str, user: str, max_tokens: int) -> str:
     config = types.GenerateContentConfig(
         system_instruction=system,
         max_output_tokens=max_tokens,
-        temperature=0.1,
+        temperature=0.0,
         response_mime_type="application/json",
     )
 

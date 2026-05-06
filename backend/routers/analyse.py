@@ -95,7 +95,7 @@ async def analyse_deck(file: Annotated[UploadFile, File(description="Pitch deck 
     # Run analysis modules in parallel
     analysis_results = await asyncio.gather(
         check_tam(claims.get("market_claims", []), tavily_results),
-        test_moat(claims.get("moat_claims", []), serper_results),
+        test_moat(claims.get("moat_claims", []), serper_results, startup_name),
         test_founder(claims.get("founders", []), cb_results, tavily_results)
     )
     
