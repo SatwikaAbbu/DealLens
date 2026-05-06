@@ -35,34 +35,47 @@ export default function ReportPage({ report, filename, onNavigate }) {
         <div className="max-w-4xl mx-auto space-y-8 pb-32">
           
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/5 pb-6">
-            <div className="space-y-1">
-              <h1 className="text-4xl font-sans font-semibold tracking-tight text-text-primary">
-                {report.scorecard.startup_name}
-              </h1>
+          <div className="flex items-start justify-between border-b border-white/5 pb-8 mb-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <h1 className="text-4xl font-sans font-bold tracking-tight text-white drop-shadow-sm">
+                  {report.scorecard?.startup_name || "Unknown Startup"}
+                </h1>
+                <span className="px-2.5 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-mono text-accent-light uppercase tracking-widest">
+                  Intelligence Report
+                </span>
+              </div>
               <div className="flex items-center gap-3">
-                <p className="text-xs font-mono text-text-faint">{filename}</p>
+                <p className="text-[11px] font-mono text-text-faint tracking-wide">{filename}</p>
                 <span className="text-text-faint/30 text-[10px]">|</span>
                 <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
               </div>
             </div>
-            <div className="flex items-center gap-6">
+            
+            <div className="flex items-center gap-8">
+              {/* Overall Score Badge */}
               <div className="flex flex-col items-end">
-                <p className="text-[10px] font-mono uppercase tracking-widest text-text-muted mb-1">Overall Score</p>
-                <span className={`px-4 py-1 rounded-full font-mono text-sm font-semibold border ${
-                  report.scorecard.overall >= 7 ? 'bg-verdict-green-bg text-verdict-green-text border-verdict-green-border' :
-                  report.scorecard.overall >= 4 ? 'bg-verdict-amber-bg text-verdict-amber-text border-verdict-amber-border' :
-                  'bg-verdict-red-bg text-verdict-red-text border-verdict-red-border'
-                }`}>
-                  {report.scorecard.overall} / 10
-                </span>
+                <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Overall Verdict</p>
+                <div className="flex items-center gap-3">
+                  <div className={`text-4xl font-mono font-bold tracking-tighter ${
+                    report.scorecard?.overall_score?.value >= 7 ? 'text-verdict-green-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 
+                    report.scorecard?.overall_score?.value >= 4 ? 'text-verdict-amber-text drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 
+                    'text-verdict-red-text drop-shadow-[0_0_15px_rgba(248,113,113,0.3)]'
+                  }`}>
+                    {report.scorecard?.overall_score?.value || 0}<span className="text-lg text-text-faint">/10</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" onClick={handleExportPDF}>
-                  Export PDF
-                </Button>
+
+              <div className="w-px h-12 bg-white/10" />
+
+              {/* Actions */}
+              <div className="flex flex-col gap-2">
                 <Button variant="primary" onClick={handleShare}>
                   {copied ? '✓ Link Copied' : 'Share Report'}
+                </Button>
+                <Button variant="ghost" onClick={handleExportPDF}>
+                  Export PDF
                 </Button>
               </div>
             </div>

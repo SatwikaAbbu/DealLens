@@ -23,6 +23,7 @@
 | 10 | 06 May 2026 | Antigravity (AI) & User | **Finalized Premium Visuals & Spec Alignment (Phase 3 Complete).** Implemented expandable claim rows, result filtering, and moat verdict banner. Added staggered ScoreBar animations, dynamic initials avatars, and header metadata. Final audit: App is 100% compliant with Architecture, Design, and Page Spec docs. |
 | 11 | 06 May 2026 | Antigravity (AI) & User | **Finalized Premium Design & Intelligence Evolution.** Transformed the app into a "World-Class" product. Implemented Glassmorphism, Noise Textures, Neon Glow Accents, High-Contrast Typography, and a Radar (Spider) Chart for deal profiling. Added a Live AI Thinking Console to the sidebar. |
 | 12 | 06 May 2026 | Antigravity (AI) & User | **Deployment & Network Routing Optimization.** Configured FastAPI backend to serve built React frontend static files. Made frontend API paths dynamic. Enabled seamless full-stack app sharing via a single Ngrok tunnel. |
+| 13 | 06 May 2026 | Antigravity (AI) & User | **Finalized Investor-Grade UX & Immersive Visuals.** Implemented single-page landing with floating interactive preview cards and drag-reaction system. Built horizontal SVG pipeline for LoadingPage. Redesigned Sections 2 & 4 to Dossier-style layout. Added scroll-reveal animations and high-impact header scoring. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -156,11 +157,14 @@
 ### Pages & Sections
 
 - [x] **`UploadPage.jsx`**
-  - [x] Drag-drop states + 🔒 trust signals
-  - [x] Error auto-clearing (3s)
+  - [x] Single-page standing view (no scroll)
+  - [x] Floating interactive preview cards with interactive hover
+  - [x] Immersive drag-drop reaction system (background intensification + card retreat)
+  - [x] 🔒 trust signals
 
 - [x] **`LoadingPage.jsx`**
-  - [x] Optimistic progress bar
+  - [x] Horizontal SVG Pipeline visualization (Wave pattern)
+  - [x] Pulsing nodes + traveling glow dot animations
   - [x] 8-second rotating investor insight cards
 
 - [x] **`ReportPage.jsx`** — sidebar + scroll layout
@@ -172,7 +176,9 @@
 
 - [x] **`Section2Founder.jsx`**
   - [x] Initials-based avatar + role identity
-  - [x] Credibility vs Risk grid
+  - [x] "Executive Intelligence Brief" dossier layout
+  - [x] Domain Fit overlapping badge
+  - [x] Credibility vs Risk grid with semantic borders
   - [x] Public Intelligence banner (Tavily/Crunchbase)
 
 - [x] **`Section3Claims.jsx`**
@@ -180,8 +186,9 @@
   - [x] Expandable rows exposing Evidence + Sources + Questions
 
 - [x] **`Section4Competitors.jsx`**
-  - [x] Moat Verdict Summary Banner (Verdict-coloured)
-  - [x] Competitor Map Table
+  - [x] Moat Verdict Summary Banner (Verdict-coloured dossier)
+  - [x] 2-column Competitive Map layout
+  - [x] Funded Competitors chip map (Serper)
 
 - [x] **`Section5Questions.jsx`**
   - [x] "Copy all questions" button with visual feedback
