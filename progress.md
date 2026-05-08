@@ -26,6 +26,7 @@
 | 13 | 06 May 2026 | Antigravity (AI) & User | **Finalized Investor-Grade UX & Immersive Visuals.** Implemented single-page landing with floating interactive preview cards and drag-reaction system. Built horizontal SVG pipeline for LoadingPage. Redesigned Sections 2 & 4 to Dossier-style layout. Added scroll-reveal animations and high-impact header scoring. |
 | 14 | 06 May 2026 | Antigravity (AI) & User | **Finalized AI Accuracy & Traceability.** Locked Gemini to `temperature=0.0` for deterministic scoring. Enforced raw HTTP URL returns in prompts. Updated `ExpandableRow` with clickable source links. Fixed competitor map to exclude the target startup. |
 | 15 | 08 May 2026 | Codex (AI) & User | **Loading Pipeline v2 + Stability Fixes.** Rebuilt `/loading` as a 5-stage straight pipeline with a camera-walk feel (zoom, travel, settle), added a top HUD card with typewriter text + micro-animations, removed checkmarks/arrows, and clamped camera to scene bounds so stage 5 stays visible. Separated gray baseline track from subtle progress overlay (no full-purple bar). Renamed stage 3 to **Competitor Map** across node + card. Updated Report header to show traceability stats and question anchoring metrics. Added minor backend client import annotations for static analysis. |
+| 16 | 08 May 2026 | Codex (AI) & User | **UX Reliability + Investor Demo Polish.** Hardened `/loading` camera framing and stage flow, added global drag-drop upload handling, enforced backend-authoritative report hydration with retry for delayed question payloads, filtered startup self-name from competitor map, and applied then refined premium report header styling based on live feedback. |
 
 *Update this table at the end of every session. One row per session.*
 
@@ -228,5 +229,5 @@
 
 ## 🚀 HACKATHON READY
 **Project Status**: 100% COMPLETE.
-**Last Sync**: 06 May 2026.
+**Last Sync**: 08 May 2026.
 **Primary Value**: Automated Due DiligenceBrief with automated investor questions.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 /* ─── Animated Counter ─── */
 function AnimatedNumber({ target, duration = 2000, suffix = '' }) {
@@ -97,6 +97,10 @@ function MiniRadar() {
 export default function UploadPage({ onUpload, error }) {
   const [dragging, setDragging] = useState(false);
   const [localError, setLocalError] = useState(error);
+  const handleIncomingFile = useCallback((incomingFile) => {
+    if (!incomingFile) return;
+    onUpload(incomingFile);
+  }, [onUpload]);
 
   useEffect(() => {
     if (error) {
@@ -106,6 +110,42 @@ export default function UploadPage({ onUpload, error }) {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  // Global DnD guard: dropping a file anywhere on this page starts upload
+  // instead of letting the browser perform default file navigation.
+  useEffect(() => {
+    const hasFiles = (event) => Array.from(event?.dataTransfer?.types || []).includes('Files');
+
+    const onWindowDragOver = (event) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      setDragging(true);
+    };
+
+    const onWindowDragLeave = (event) => {
+      if (event.relatedTarget == null) {
+        setDragging(false);
+      }
+    };
+
+    const onWindowDrop = (event) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      setDragging(false);
+      const dropped = event.dataTransfer?.files?.[0];
+      handleIncomingFile(dropped);
+    };
+
+    window.addEventListener('dragover', onWindowDragOver);
+    window.addEventListener('dragleave', onWindowDragLeave);
+    window.addEventListener('drop', onWindowDrop);
+
+    return () => {
+      window.removeEventListener('dragover', onWindowDragOver);
+      window.removeEventListener('dragleave', onWindowDragLeave);
+      window.removeEventListener('drop', onWindowDrop);
+    };
+  }, [handleIncomingFile]);
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-bg-base">
@@ -120,7 +160,7 @@ export default function UploadPage({ onUpload, error }) {
       {/* ── BACKGROUND FLOATING CARDS ── */}
       
       {/* Card 1: Left Middle (Scorecard) — reacts to drag */}
-      <div className={`hidden lg:flex absolute left-[-4%] top-1/2 -translate-y-1/2 transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[320px] backdrop-blur-xl ${dragging ? '-rotate-[14deg] opacity-30 scale-90 blur-[2px]' : '-rotate-[8deg] opacity-70 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105'}`}>
+      <div className={`hidden lg:flex absolute left-[-4%] top-1/2 -translate-y-1/2 transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[320px] backdrop-blur-xl ${dragging ? '-rotate-[14deg] opacity-30 scale-90 blur-[2px]' : '-rotate-[8deg] opacity-70 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105 animate-floatTilt'}`}>
         <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
           <span className="text-[10px] font-mono text-accent-light uppercase tracking-widest font-semibold">01</span>
           <span className="text-[10px] font-mono text-gray-300 uppercase tracking-widest">Deal Scorecard</span>
@@ -136,7 +176,7 @@ export default function UploadPage({ onUpload, error }) {
       </div>
 
       {/* Card 2: Top Right (Claim Verification) — reacts to drag */}
-      <div className={`hidden lg:flex absolute right-[-2%] top-[12%] transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[340px] backdrop-blur-xl ${dragging ? 'rotate-[14deg] opacity-25 scale-90 blur-[2px]' : 'rotate-[8deg] opacity-65 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105'}`}>
+      <div className={`hidden lg:flex absolute right-[-2%] top-[12%] transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[340px] backdrop-blur-xl ${dragging ? 'rotate-[14deg] opacity-25 scale-90 blur-[2px]' : 'rotate-[8deg] opacity-65 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105 animate-floatSlow'}`}>
         <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
           <span className="text-[10px] font-mono text-accent-light uppercase tracking-widest font-semibold">02</span>
           <span className="text-[10px] font-mono text-gray-300 uppercase tracking-widest">Claim Verification</span>
@@ -157,7 +197,7 @@ export default function UploadPage({ onUpload, error }) {
       </div>
 
       {/* Card 3: Bottom Right (Investor Questions) — reacts to drag */}
-      <div className={`hidden lg:flex absolute right-[2%] bottom-[8%] transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[360px] backdrop-blur-xl ${dragging ? '-rotate-[12deg] opacity-30 scale-90 blur-[2px]' : '-rotate-[6deg] opacity-75 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105'}`}>
+      <div className={`hidden lg:flex absolute right-[2%] bottom-[8%] transition-all duration-700 ease-out shadow-[0_10px_40px_rgba(0,0,0,0.8),_0_0_20px_rgba(113,112,255,0.1)] rounded-xl bg-[#13141a]/90 border border-white/10 p-6 flex-col w-[360px] backdrop-blur-xl ${dragging ? '-rotate-[12deg] opacity-30 scale-90 blur-[2px]' : '-rotate-[6deg] opacity-75 hover:opacity-100 hover:rotate-0 hover:z-50 hover:scale-105 animate-floatTilt'}`}>
         <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
           <span className="text-[10px] font-mono text-accent-light uppercase tracking-widest font-semibold">03</span>
           <span className="text-[10px] font-mono text-gray-300 uppercase tracking-widest">Investor Questions</span>
@@ -228,7 +268,7 @@ export default function UploadPage({ onUpload, error }) {
             e.preventDefault(); 
             setDragging(false); 
             if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-              onUpload(e.dataTransfer.files[0]);
+              handleIncomingFile(e.dataTransfer.files[0]);
             }
           }}
           className={`
@@ -239,7 +279,7 @@ export default function UploadPage({ onUpload, error }) {
               ? 'border-verdict-red-border bg-verdict-red-bg/10 shadow-[0_0_30px_rgba(255,77,77,0.15)]' 
               : dragging
                 ? 'border-accent bg-accent/15 scale-[1.04] shadow-[0_0_60px_rgba(113,112,255,0.4),_0_0_120px_rgba(113,112,255,0.15)]'
-                : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.05] hover:border-white/20 shadow-2xl'
+                : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.05] hover:border-white/20 shadow-2xl animate-pulseGlow'
             }
           `}
         >
@@ -285,7 +325,7 @@ export default function UploadPage({ onUpload, error }) {
               className="hidden" 
               onChange={e => {
                 if (e.target.files && e.target.files[0]) {
-                  onUpload(e.target.files[0]);
+                  handleIncomingFile(e.target.files[0]);
                 }
               }} 
             />

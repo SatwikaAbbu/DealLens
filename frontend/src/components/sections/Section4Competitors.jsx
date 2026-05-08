@@ -2,7 +2,22 @@ import React from 'react';
 import ReportCard from '../shared/ReportCard';
 import Skeleton from '../shared/Skeleton';
 
-export default function Section4Competitors({ competitors, moat }) {
+function toDisplayName(item) {
+  if (typeof item === 'string') return item.trim();
+  if (item && typeof item === 'object') return String(item.name || '').trim();
+  return '';
+}
+
+function normalizeCompanyName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\b(inc|llc|ltd|limited|corp|corporation|technologies|technology|tech|labs|lab|ai|private|pvt)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export default function Section4Competitors({ competitors, moat, startupName }) {
   if (!competitors || !moat) {
     return (
       <ReportCard eyebrow="04 — Competitors" title="Competitor Map">
@@ -38,6 +53,20 @@ export default function Section4Competitors({ competitors, moat }) {
   };
 
   const moatBg = getMoatStyle(moat.verdict);
+  const startupNorm = normalizeCompanyName(startupName);
+  const filteredCompetitors = Array.from(
+    new Set(
+      (Array.isArray(competitors) ? competitors : [])
+        .map(toDisplayName)
+        .filter(Boolean)
+        .filter((name) => {
+          const compNorm = normalizeCompanyName(name);
+          if (!compNorm) return false;
+          if (!startupNorm) return true;
+          return !(compNorm === startupNorm || compNorm.replace(/\s/g, '') === startupNorm.replace(/\s/g, ''));
+        })
+    )
+  );
 
   return (
     <ReportCard eyebrow="04" title="Competitor Map">
@@ -67,13 +96,13 @@ export default function Section4Competitors({ competitors, moat }) {
             <span className="w-1.5 h-1.5 rounded-full bg-accent-light" />
             Market Proximity
           </h3>
-          {competitors && competitors.length > 0 ? (
+          {filteredCompetitors.length > 0 ? (
             <div className="rounded-xl shadow-card border border-white/[0.03] bg-bg-surface/30 p-5 h-full">
               <p className="text-[10px] font-mono font-medium uppercase tracking-[0.15em] text-text-faint mb-4">
                 Funded Competitors Identified via Serper
               </p>
               <div className="flex flex-wrap gap-2.5">
-                {competitors.map((comp, i) => (
+                {filteredCompetitors.map((comp, i) => (
                   <span 
                     key={i} 
                     className="px-3 py-1.5 bg-bg-raised border border-white/10 rounded-full text-[13px] font-sans text-text-secondary shadow-sm hover:bg-white/5 transition-colors cursor-default flex items-center gap-2"

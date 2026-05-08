@@ -65,11 +65,12 @@ export default function ReportPage({ report, filename, onNavigate }) {
     <div className="min-h-screen bg-bg-base flex">
       <Sidebar active={activeSection} onNavigate={onNavigate} filename={filename} />
       
-      <main className="ml-56 flex-1 px-8 py-8 h-screen overflow-y-auto">
-        <div className="max-w-4xl mx-auto space-y-8 pb-32">
+      <main className="ml-56 flex-1 px-8 py-8 h-screen overflow-y-auto relative">
+        <div className="absolute top-24 right-20 w-[360px] h-[360px] bg-accent/10 blur-[130px] rounded-full pointer-events-none" />
+        <div className="max-w-4xl mx-auto space-y-10 pb-32 relative z-10">
           
           {/* Header */}
-          <div className="flex items-start justify-between border-b border-white/5 pb-8 mb-4">
+          <div className="flex items-start justify-between border border-white/[0.08] bg-bg-panel/45 backdrop-blur-md rounded-2xl px-6 py-6 shadow-card">
             <div className="space-y-3">
               <div className="flex items-center gap-4">
                 <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
@@ -83,10 +84,6 @@ export default function ReportPage({ report, filename, onNavigate }) {
                 <p className="text-[11px] font-mono text-text-faint tracking-wide">{filename}</p>
                 <span className="text-text-faint/30 text-[10px]">|</span>
                 <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
-                <span className="text-text-faint/30 text-[10px]">|</span>
-                <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">
-                  Traceability {trace.sourceCount}/{trace.claimCount} sources
-                </p>
               </div>
             </div>
             
@@ -103,9 +100,6 @@ export default function ReportPage({ report, filename, onNavigate }) {
                     {overall}<span className="text-lg text-text-faint">/10</span>
                   </div>
                 </div>
-                <p className="mt-1 text-[10px] font-mono text-text-faint uppercase tracking-wider">
-                  {trace.anchoredQuestions}/{trace.questionCount} questions claim-anchored
-                </p>
               </div>
 
               <div className="w-px h-12 bg-white/10" />
@@ -146,7 +140,11 @@ export default function ReportPage({ report, filename, onNavigate }) {
           {/* 04: Competitor Map */}
           <section id="competitors" className="scroll-mt-8">
             <ErrorBoundary eyebrow="04" title="Competitor Map">
-              <Section4Competitors competitors={report.competitors} moat={report.claims.moat} />
+              <Section4Competitors
+                competitors={report.competitors}
+                moat={report.claims.moat}
+                startupName={report?.scorecard?.startup_name}
+              />
             </ErrorBoundary>
           </section>
 

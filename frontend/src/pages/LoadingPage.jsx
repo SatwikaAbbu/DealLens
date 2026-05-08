@@ -18,10 +18,13 @@ const INSIGHTS = [
 const TOTAL_STEPS = 5;
 
 // Scene-space coordinates (px)
-const NODE_X = [170, 430, 690, 950, 1210];
+// Wider scene and extra right padding prevent step 5 clipping on narrower viewports.
+const NODE_X = [210, 520, 830, 1140, 1450];
 const NODE_Y = 260;
-const SCENE_W = 1380;
+const SCENE_W = 1720;
 const SCENE_H = 460;
+const SCENE_SAFE_LEFT = 0;
+const SCENE_SAFE_RIGHT = 260;
 
 function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
@@ -280,6 +283,8 @@ export default function LoadingPage({ currentStep }) {
   const typeOn = machine.phase === 'card_open';
   const step = clamp(machine.targetStep, 1, TOTAL_STEPS);
   const pct = Math.round((Math.min(machine.targetStep, TOTAL_STEPS) / TOTAL_STEPS) * 100);
+  const activeStepLabel = STEPS[step - 1]?.label ?? 'Running analysis';
+  const showFiveAgentDone = step === TOTAL_STEPS;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -326,13 +331,17 @@ export default function LoadingPage({ currentStep }) {
   const camera = useMemo(() => {
     const w = viewport.w || 900;
     const h = viewport.h || 460;
+    const isFinalFrame =
+      machine.displayStep === TOTAL_STEPS &&
+      ['card_open', 'card_close', 'settle', 'outro'].includes(machine.phase);
 
     const scaleOverview = 1.0;
-    const scaleStep = 1.58;
+    const scaleStep = isFinalFrame ? 1.03 : 1.58;
     const scaleTravel = 1.3;
 
     const midX = (NODE_X[0] + NODE_X[4]) / 2;
-    const focusX = w * 0.5;
+    // During the final stage, center the whole pipeline so all 5 stages are visible.
+    const focusX = isFinalFrame ? w * 0.5 : w * 0.5;
     const focusY = h * 0.64;
     const phaseLocal = prefersReducedMotion ? 'overview' : machine.phase;
 
@@ -343,13 +352,14 @@ export default function LoadingPage({ currentStep }) {
       scaleStep;
 
     const nodeX =
-      (phaseLocal === 'overview' || phaseLocal === 'outro') ? midX : NODE_X[machine.displayStep - 1];
+      (phaseLocal === 'overview' || phaseLocal === 'outro' || isFinalFrame) ? midX : NODE_X[machine.displayStep - 1];
     const nodeY = NODE_Y;
 
     const rawTx = focusX / scale - nodeX;
     const ty = focusY / scale - nodeY;
-    const minTx = w / scale - SCENE_W;
-    const tx = clamp(rawTx, minTx, 0);
+    const minBoundTx = SCENE_SAFE_LEFT;
+    const maxBoundTx = (w / scale) - (SCENE_W + SCENE_SAFE_RIGHT);
+    const tx = clamp(rawTx, maxBoundTx, minBoundTx);
 
     const rotateY = phaseLocal === 'travel' ? '-3deg' : '0deg';
 
@@ -456,7 +466,7 @@ export default function LoadingPage({ currentStep }) {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-bg-base">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[620px] h-[620px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-6xl relative z-10 space-y-6">
+      <div className="w-full max-w-[1400px] relative z-10 space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 mb-3 animate-pulse">
             <svg className="w-5 h-5 text-accent-light" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -540,7 +550,8 @@ export default function LoadingPage({ currentStep }) {
               const status = idx < machine.displayStep ? 'done' : idx === machine.displayStep ? 'active' : 'pending';
               const left = NODE_X[i] - 22;
               const top = NODE_Y - 22;
-              const labelTransform = idx === TOTAL_STEPS ? 'translateX(-72%)' : 'translateX(-50%)';
+              const labelTransform = idx === TOTAL_STEPS ? 'translateX(-90%)' : 'translateX(-50%)';
+              const labelWidth = idx === TOTAL_STEPS ? '150px' : '190px';
 
               const ring =
                 status === 'done'
@@ -566,7 +577,7 @@ export default function LoadingPage({ currentStep }) {
                   </div>
                   <div
                     className="absolute top-[52px] w-[190px] text-center"
-                    style={{ left: '50%', transform: labelTransform }}
+                    style={{ left: '50%', transform: labelTransform, width: labelWidth }}
                   >
                     <p className={`text-[10px] font-mono uppercase tracking-[0.08em] ${
                       status === 'active' ? 'text-text-primary' : status === 'done' ? 'text-text-muted' : 'text-text-faint'
@@ -590,6 +601,7 @@ export default function LoadingPage({ currentStep }) {
                   : 'left 900ms cubic-bezier(0.18, 0.86, 0.22, 1), top 900ms cubic-bezier(0.18, 0.86, 0.22, 1)',
               }}
             />
+
           </div>
 
           {/* Big HUD card overlay (never clipped by camera transforms) */}
@@ -641,7 +653,32 @@ export default function LoadingPage({ currentStep }) {
           </div>
         </div>
 
-        {/* Mobile list removed: camera view renders on all sizes now */}
+        <div className="rounded-xl border border-white/[0.06] bg-bg-panel/45 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-mono uppercase tracking-[0.14em] text-text-faint">Current Stage</p>
+            <p className="text-sm font-sans text-text-primary truncate">{activeStepLabel}</p>
+            {showFiveAgentDone && (
+              <p className="text-[11px] font-mono text-verdict-green-text mt-1">
+                All 5 agent analyses completed.
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {STEPS.map((s) => {
+              const done = s.id < step;
+              const active = s.id === step;
+              return (
+                <span
+                  key={s.id}
+                  className={`w-2 h-2 rounded-full ${
+                    done ? 'bg-verdict-green-text' : active ? 'bg-accent-light shadow-[0_0_8px_rgba(113,112,255,0.7)]' : 'bg-white/20'
+                  }`}
+                  title={s.label}
+                />
+              );
+            })}
+          </div>
+        </div>
 
         <div className="pt-1">
           <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-text-muted mb-3 text-center">
