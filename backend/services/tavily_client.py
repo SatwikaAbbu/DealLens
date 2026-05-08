@@ -1,8 +1,10 @@
+from anyio import to_thread
 import os
 import asyncio
 import logging
 from typing import Optional
 
+# pyrefly: ignore [missing-import]
 from tavily import TavilyClient
 
 logger = logging.getLogger(__name__)

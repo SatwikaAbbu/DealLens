@@ -10,12 +10,46 @@ import Section3Claims from '../components/sections/Section3Claims';
 import Section4Competitors from '../components/sections/Section4Competitors';
 import Section5Questions from '../components/sections/Section5Questions';
 
+function computeTraceabilityMetrics(report) {
+  const claimsObj = report?.claims && typeof report.claims === 'object' ? report.claims : null;
+  const claimKeys = claimsObj ? Object.keys(claimsObj) : [];
+
+  let sourceCount = 0;
+  let verdictCount = 0;
+  for (const key of claimKeys) {
+    const claim = claimsObj[key];
+    if (!claim || typeof claim !== 'object') continue;
+    if (typeof claim.verdict === 'string' && claim.verdict.trim()) verdictCount += 1;
+    if (typeof claim.source === 'string' && claim.source.trim().toLowerCase().startsWith('http')) sourceCount += 1;
+  }
+
+  const questions = Array.isArray(report?.questions) ? report.questions : [];
+  const anchoredQuestions = questions.filter(q => {
+    return q && typeof q === 'object' && typeof q.targets_claim === 'string' && q.targets_claim.trim().length > 0;
+  }).length;
+
+  return {
+    claimCount: claimKeys.length,
+    verdictCount,
+    sourceCount,
+    questionCount: questions.length,
+    anchoredQuestions,
+  };
+}
+
 export default function ReportPage({ report, filename, onNavigate }) {
   const [copied, setCopied] = useState(false);
   
   // Array of section IDs that match the <section id="..."> tags
   const sectionIds = ['scorecard', 'founder', 'claims', 'competitors', 'questions'];
   const activeSection = useScrollSpy(sectionIds, 100);
+
+  const overall =
+    report?.scorecard?.overall ??
+    report?.scorecard?.overall_score?.value ??
+    0;
+
+  const trace = computeTraceabilityMetrics(report);
 
   const handleExportPDF = () => {
     window.print();
@@ -38,7 +72,7 @@ export default function ReportPage({ report, filename, onNavigate }) {
           <div className="flex items-start justify-between border-b border-white/5 pb-8 mb-4">
             <div className="space-y-3">
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-sans font-bold tracking-tight text-white drop-shadow-sm">
+                <h1 className="text-3xl font-sans font-semibold tracking-tight text-text-primary">
                   {report.scorecard?.startup_name || "Unknown Startup"}
                 </h1>
                 <span className="px-2.5 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-mono text-accent-light uppercase tracking-widest">
@@ -49,6 +83,10 @@ export default function ReportPage({ report, filename, onNavigate }) {
                 <p className="text-[11px] font-mono text-text-faint tracking-wide">{filename}</p>
                 <span className="text-text-faint/30 text-[10px]">|</span>
                 <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">Analysed just now</p>
+                <span className="text-text-faint/30 text-[10px]">|</span>
+                <p className="text-[10px] font-mono text-text-faint uppercase tracking-wider">
+                  Traceability {trace.sourceCount}/{trace.claimCount} sources
+                </p>
               </div>
             </div>
             
@@ -57,14 +95,17 @@ export default function ReportPage({ report, filename, onNavigate }) {
               <div className="flex flex-col items-end">
                 <p className="text-[10px] font-mono text-text-muted uppercase tracking-widest mb-1">Overall Verdict</p>
                 <div className="flex items-center gap-3">
-                  <div className={`text-4xl font-mono font-bold tracking-tighter ${
-                    report.scorecard?.overall_score?.value >= 7 ? 'text-verdict-green-text drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]' : 
-                    report.scorecard?.overall_score?.value >= 4 ? 'text-verdict-amber-text drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 
-                    'text-verdict-red-text drop-shadow-[0_0_15px_rgba(248,113,113,0.3)]'
+                  <div className={`text-4xl font-mono font-semibold tracking-tighter ${
+                    overall >= 7 ? 'text-verdict-green-text' :
+                    overall >= 4 ? 'text-verdict-amber-text' :
+                                   'text-verdict-red-text'
                   }`}>
-                    {report.scorecard?.overall_score?.value || 0}<span className="text-lg text-text-faint">/10</span>
+                    {overall}<span className="text-lg text-text-faint">/10</span>
                   </div>
                 </div>
+                <p className="mt-1 text-[10px] font-mono text-text-faint uppercase tracking-wider">
+                  {trace.anchoredQuestions}/{trace.questionCount} questions claim-anchored
+                </p>
               </div>
 
               <div className="w-px h-12 bg-white/10" />

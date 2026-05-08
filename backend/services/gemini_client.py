@@ -7,6 +7,7 @@ import logging
 from typing import List
 
 from google import genai
+# pyrefly: ignore [missing-import]
 from google.genai import types
 
 logger = logging.getLogger(__name__)
