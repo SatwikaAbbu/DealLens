@@ -16,11 +16,12 @@ function DealLensFlow() {
 
   const handleUpload = async (file) => {
     setUploadError(null);
+    setCurrentStep(1);
+    setLiveReport(null);
     navigate('/loading');
     
     // Optimistic loading animation (caps at step 4 until the API resolves)
     let step = 1;
-    setCurrentStep(1);
     const interval = setInterval(() => {
       step = step < 4 ? step + 1 : 4; 
       setCurrentStep(step);
@@ -32,8 +33,8 @@ function DealLensFlow() {
       setCurrentStep(5);
       setLiveReport(data);
       
-      // Short delay so the user sees the final "Done" state
-      setTimeout(() => navigate(`/report/${data.report_id}`), 1000);
+      // Let the loading scene travel to step 5, show the final card, then zoom out.
+      setTimeout(() => navigate(`/report/${data.report_id}`), 5000);
       
     } catch (err) {
       clearInterval(interval);
